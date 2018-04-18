@@ -1148,6 +1148,8 @@ def get_data_dictionaries(json_files, benchmarks=[], wallclock_only=False,
                         data_dictionary['instr_data'][key][machine] = None
                     else:
                         data_dictionary['cycles_counts'][key][machine] = data['core_cycle_counts'][key]
+                        if key in data['instr_data']:
+                            data_dictionary['instr_data'][key][machine] = data['instr_data'][key]
                         if instr_data:
                             data_dictionary['instr_data'][key][machine] =  \
                                 get_instr_data(
