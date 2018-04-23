@@ -171,21 +171,23 @@ class PyPyInstrumentParser(VMInstrumentParser):
             print 'WARNING: unknown event in PyPy instrumentation: %s' % event_type
         return net_time
 
-class LuaJitInstrumentParser(VMInstrumentParser):
-    """Parser for LuaJIT instrumentation data."""
+class GenericInstrumentParser(VMInstrumentParser):
+    """Parser for pre processed instrumentation data."""
 
     def __init__(self, instr_data):
         VMInstrumentParser.__init__(self, 'OpenResty')
-        print "LUA JIT VM INSTR PARSER!"
         self.instr_data = instr_data if instr_data else None
         self.parse_instr_data()
 
     def parse_instr_data(self):
-        self.chart_data = ([ChartData('Regex', self.instr_data['data'], 'time in regex functions')])
+        chart_data = []
+        for timer in self.instr_data['timers']:
+            chart_data.append(ChartData(timer['label'], timer['data'], timer['label']))
+        self.chart_data = chart_data
 
 # Mapping from VM name -> parser class.
 # This enables the main scripts to parse instrumentation data based only
 # on the vm:bench:language triplets found in Krun data files.
 INSTRUMENTATION_PARSERS = { 'HotSpot': HotSpotInstrumentParser,
                             'PyPy': PyPyInstrumentParser, 
-                            'OpenResty': LuaJitInstrumentParser,}
+                            'OpenResty': GenericInstrumentParser,}
